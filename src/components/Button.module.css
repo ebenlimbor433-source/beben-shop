@@ -1,0 +1,28 @@
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:0.5rem;
+  padding:0.95rem 1.7rem;
+  font-family:var(--font-accent);
+  font-size:0.85rem;
+  letter-spacing:0.06em;
+  text-transform:uppercase;
+  border-radius:2px;
+  border:1px solid transparent;
+  cursor:pointer;
+  background:none;
+  min-height:44px;
+  transition:transform 200ms var(--ease-out), background 200ms var(--ease-out),
+    border-color 200ms var(--ease-out), color 200ms var(--ease-out);
+}
+.btn svg{ width:16px; height:16px; }
+.btn:disabled{ opacity:0.5; cursor:not-allowed; }
+
+.gold{ background:var(--color-gold); color:#14100A; font-weight:600; }
+.gold:hover:not(:disabled){ background:var(--color-gold-bright); transform:translateY(-1px); }
+
+.ghost{ border-color:var(--color-border-strong); color:var(--color-cream); }
+.ghost:hover:not(:disabled){ border-color:var(--color-gold-bright); color:var(--color-gold-bright); }
+
+.sm{ padding:0.65rem 1.2rem; font-size:0.75rem; min-height:auto; }

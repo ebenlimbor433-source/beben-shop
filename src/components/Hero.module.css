@@ -1,0 +1,77 @@
+.hero{
+  position:relative;
+  padding-block:clamp(4rem, 6vw + 2rem, 8rem) clamp(3rem, 5vw, 6rem);
+  overflow:hidden;
+  background:radial-gradient(ellipse 70% 50% at 50% -10%, rgba(198,161,91,0.14), transparent 60%), var(--color-bg);
+}
+.inner{ position:relative; max-width:880px; }
+
+.eyebrow{
+  margin-bottom:1.4rem;
+  opacity:0;
+  transform:translateY(16px);
+  transition:opacity 600ms var(--ease-out), transform 600ms var(--ease-out);
+}
+.eyebrow.in{ opacity:1; transform:translateY(0); }
+
+.title{
+  position:relative;
+  overflow:hidden;
+  font-family:var(--font-display);
+  font-weight:400;
+  font-size:clamp(2.6rem, 2rem + 3.2vw, 5.2rem);
+  line-height:1.06;
+  letter-spacing:-0.01em;
+  color:var(--color-cream);
+}
+.title em{ font-style:italic; color:var(--color-gold-bright); }
+
+.line{
+  display:block;
+  opacity:0;
+  transform:translateY(28px);
+  transition:opacity 700ms var(--ease-out), transform 700ms var(--ease-out);
+}
+.line.in{ opacity:1; transform:translateY(0); }
+
+.sheen{
+  position:absolute; top:0; left:0;
+  width:55%; height:100%;
+  background:linear-gradient(100deg, transparent 15%, rgba(232,199,126,0.45) 50%, transparent 85%);
+  pointer-events:none;
+  transform:translateX(-130%);
+  animation-name:sheenSweep;
+  animation-duration:1.3s;
+  animation-timing-function:var(--ease-out);
+  animation-delay:900ms;
+  animation-iteration-count:1;
+  animation-fill-mode:forwards;
+}
+@keyframes sheenSweep{
+  from{ transform:translateX(-130%); }
+  to{ transform:translateX(300%); }
+}
+
+.sub{
+  margin-top:1.8rem;
+  max-width:540px;
+  font-size:1.08rem;
+  color:var(--color-muted);
+  line-height:1.7;
+  opacity:0;
+  transform:translateY(16px);
+  transition:opacity 600ms var(--ease-out) 200ms, transform 600ms var(--ease-out) 200ms;
+}
+.sub.in{ opacity:1; transform:translateY(0); }
+
+.ctas{
+  display:flex; flex-wrap:wrap; gap:1rem; margin-top:2.4rem;
+  opacity:0;
+  transform:translateY(16px);
+  transition:opacity 600ms var(--ease-out) 320ms, transform 600ms var(--ease-out) 320ms;
+}
+.ctas.in{ opacity:1; transform:translateY(0); }
+
+@media (max-width:560px){
+  .ctas a, .ctas button{ width:100%; }
+}
