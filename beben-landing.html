@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BEBEN — Luxury, Read in Real Time</title>
+<meta name="description" content="BEBEN pairs a hand-vetted edit of fine goods with Pulse, an intelligence layer that reads real-world demand — so what you're offered is both exceptional and early.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Jost:wght@400;500;600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --color-bg:#0B0A08;
+    --color-surface:#161309;
+    --color-surface-raised:#1E1A11;
+    --color-gold:#C6A15B;
+    --color-gold-bright:#E8C77E;
+    --color-gold-deep:#8B6F3E;
+    --color-cream:#F5F1E6;
+    --color-muted:#9A9284;
+    --color-border:rgba(198,161,91,0.16);
+    --color-border-strong:rgba(198,161,91,0.34);
+
+    --font-display:'Fraunces', Georgia, serif;
+    --font-accent:'Jost', sans-serif;
+    --font-body:'Manrope', sans-serif;
+
+    --ease-out:cubic-bezier(.16,.84,.44,1);
+    --container:min(1180px, 92vw);
+  }
+
+  *,*::before,*::after{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{
+    margin:0;
+    background:var(--color-bg);
+    color:var(--color-cream);
+    font-family:var(--font-body);
+    font-size:16px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  img,svg{ display:block; max-width:100%; }
+  a{ color:inherit; text-decoration:none; }
+  ul{ list-style:none; margin:0; padding:0; }
+  h1,h2,h3,p{ margin:0; }
+  button{ font-family:inherit; }
+
+  :focus-visible{
+    outline:2px solid var(--color-gold-bright);
+    outline-offset:3px;
+    border-radius:2px;
+  }
+
+  .skip-link{
+    position:absolute;
+    left:-9999px;
+    top:0;
+    background:var(--color-gold-bright);
+    color:#14100A;
+    padding:12px 18px;
+    z-index:200;
+    font-family:var(--font-accent);
+    font-size:0.85rem;
+    border-radius:0 0 8px 0;
+  }
+  .skip-link:focus{ left:0; }
+
+  .container{ width:var(--container); margin-inline:auto; }
+  .eyebrow{
+    font-family:var(--font-accent);
+    text-transform:uppercase;
+    letter-spacing:0.22em;
+    font-size:0.75rem;
+    color:var(--color-gold);
+    font-weight:500;
+  }
+
+  /* ---------- Buttons ---------- */
+  .btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:0.5rem;
+    padding:0.95rem 1.7rem;
+    font-family:var(--font-accent);
+    font-size:0.85rem;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    border-radius:2px;
+    border:1px solid transparent;
+    cursor:pointer;
+    transition:transform 200ms var(--ease-out), background 200ms var(--ease-out), border-color 200ms var(--ease-out), color 200ms var(--ease-out);
+    min-height:44px;
+  }
+  .btn-gold{ background:var(--color-gold); color:#14100A; font-weight:600; }
+  .btn-gold:hover{ background:var(--color-gold-bright); transform:translateY(-1px); }
+  .btn-ghost{ border-color:var(--color-border-strong); color:var(--color-cream); }
+  .btn-ghost:hover{ border-color:var(--color-gold-bright); color:var(--color-gold-bright); }
+  .btn-sm{ padding:0.65rem 1.2rem; font-size:0.75rem; }
+  .btn svg{ width:16px; height:16px; }
+
+  /* ---------- Nav ---------- */
+  .nav{
+    position:sticky; top:0; z-index:100;
+    background:rgba(11,10,8,0.86);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--color-border);
+  }
+  .nav-inner{
+    display:flex; align-items:center; justify-content:space-between;
+    padding-block:1.1rem;
+  }
+  .nav-mark{
+    font-family:var(--font-display);
+    font-size:1.4rem;
+    letter-spacing:0.06em;
+    font-weight:500;
+    color:var(--color-cream);
+  }
+  .nav-links{ display:flex; gap:2.2rem; }
+  .nav-links a{
+    font-family:var(--font-accent);
+    font-size:0.85rem;
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    color:var(--color-muted);
+    transition:color 200ms var(--ease-out);
+    padding:0.4rem 0;
+  }
+  .nav-links a:hover{ color:var(--color-gold-bright); }
+  .nav-actions{ display:flex; align-items:center; gap:1rem; }
+  .nav-toggle{
+    display:none;
+    background:none; border:1px solid var(--color-border-strong);
+    color:var(--color-cream);
+    width:44px; height:44px;
+    align-items:center; justify-content:center;
+    border-radius:2px; cursor:pointer;
+  }
+  .nav-toggle svg{ width:20px; height:20px; }
+  .icon-close{ display:none; }
+  .nav[data-open="true"] .icon-menu{ display:none; }
+  .nav[data-open="true"] .icon-close{ display:block; }
+
+  .mobile-menu{
+    display:none;
+    flex-direction:column;
+    border-top:1px solid var(--color-border);
+    padding:0.5rem 1.5rem 1.2rem;
+  }
+  .mobile-menu a{
+    font-family:var(--font-accent);
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    font-size:0.9rem;
+    color:var(--color-cream);
+    padding:0.9rem 0;
+    border-bottom:1px solid var(--color-border);
+  }
+  .nav[data-open="true"] .mobile-menu{ display:flex; }
+
+  /* ---------- Hero ---------- */
+  .hero{
+    position:relative;
+    padding-block:clamp(4rem, 6vw + 2rem, 8rem) clamp(3rem, 5vw, 6rem);
+    overflow:hidden;
+    background:radial-gradient(ellipse 70% 50% at 50% -10%, rgba(198,161,91,0.14), transparent 60%), var(--color-bg);
+  }
+  .hero-inner{ position:relative; max-width:880px; }
+  .hero-eyebrow{ margin-bottom:1.4rem; }
+  .hero-title{
+    position:relative;
+    overflow:hidden;
+    font-family:var(--font-display);
+    font-weight:400;
+    font-size:clamp(2.6rem, 2rem + 3.2vw, 5.2rem);
+    line-height:1.06;
+    letter-spacing:-0.01em;
+    color:var(--color-cream);
+  }
+  .hero-title .line{ display:block; }
+  .hero-title em{
+    font-style:italic;
+    color:var(--color-gold-bright);
+  }
+  .hero-sheen{
+    position:absolute; top:0; left:0;
+    width:55%; height:100%;
+    background:linear-gradient(100deg, transparent 15%, rgba(232,199,126,0.45) 50%, transparent 85%);
+    transform:translateX(-130%);
+    pointer-events:none;
+  }
+  .hero-sub{
+    margin-top:1.8rem;
+    max-width:540px;
+    font-size:1.08rem;
+    color:var(--color-muted);
+    line-height:1.7;
+  }
+  .hero-ctas{ display:flex; flex-wrap:wrap; gap:1rem; margin-top:2.4rem; }
+
+  /* ---------- Trust strip ---------- */
+  .trust{
+    border-top:1px solid var(--color-border);
+    border-bottom:1px solid var(--color-border);
+  }
+  .trust-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:1px;
+    background:var(--color-border);
+  }
+  .trust-item{
+    background:var(--color-bg);
+    padding:2rem 1.6rem;
+    display:flex; align-items:flex-start; gap:0.9rem;
+  }
+  .trust-item svg{ width:22px; height:22px; color:var(--color-gold); flex-shrink:0; margin-top:2px; }
+  .trust-item p{ font-size:0.92rem; color:var(--color-cream); line-height:1.5; }
+
+  /* ---------- Section shell ---------- */
+  .section{ padding-block:clamp(4rem, 6vw, 7rem); }
+  .section-head{ max-width:640px; margin-bottom:3rem; }
+  .section-head h2{
+    font-family:var(--font-display);
+    font-weight:400;
+    font-size:clamp(2rem, 1.5rem + 1.8vw, 3.1rem);
+    margin-top:0.9rem;
+    line-height:1.1;
+  }
+  .section-head p{ margin-top:1rem; color:var(--color-muted); font-size:1.02rem; line-height:1.65; }
+  .section-alt{ background:var(--color-surface); }
+
+  /* ---------- Pulse cards ---------- */
+  .pulse-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(230px, 1fr));
+    gap:1.25rem;
+  }
+  .pulse-card{
+    background:var(--color-surface-raised);
+    border:1px solid var(--color-border);
+    border-radius:4px;
+    padding:1.6rem;
+    transition:border-color 200ms var(--ease-out), transform 200ms var(--ease-out);
+  }
+  .pulse-card:hover{ border-color:var(--color-border-strong); transform:translateY(-3px); }
+  .pulse-card__top{ display:flex; align-items:center; justify-content:space-between; }
+  .pulse-rank{
+    font-family:var(--font-accent);
+    color:var(--color-gold);
+    font-size:0.85rem;
+    letter-spacing:0.05em;
+  }
+  .pulse-live{
+    display:inline-flex; align-items:center; gap:0.5rem;
+    font-family:var(--font-accent);
+    text-transform:uppercase;
+    font-size:0.75rem;
+    letter-spacing:0.12em;
+    color:var(--color-muted);
+  }
+  .pulse-dot{ position:relative; width:6px; height:6px; border-radius:50%; background:var(--color-gold-bright); }
+  .pulse-dot::after{
+    content:''; position:absolute; inset:-5px;
+    border-radius:50%; border:1px solid var(--color-gold-bright);
+    animation:pulse-ring 2.2s var(--ease-out) infinite;
+  }
+  .pulse-card__name{ font-family:var(--font-display); font-size:1.25rem; font-weight:500; margin-top:1.1rem; }
+  .pulse-card__cat{ font-size:0.85rem; color:var(--color-muted); margin-top:0.3rem; }
+  .pulse-chart{
+    display:flex; align-items:flex-end; gap:4px;
+    height:44px; margin-top:1.4rem;
+  }
+  .pulse-chart span{
+    flex:1;
+    height:var(--h);
+    background:linear-gradient(to top, var(--color-gold-deep), var(--color-gold-bright));
+    border-radius:1px;
+    opacity:0.85;
+  }
+  .pulse-chart span:last-child{ opacity:1; }
+  .pulse-card__stat{
+    margin-top:1.2rem;
+    font-family:var(--font-display);
+    font-size:1.5rem;
+    color:var(--color-gold-bright);
+  }
+  .pulse-card__stat span{
+    font-family:var(--font-body);
+    font-size:0.82rem;
+    color:var(--color-muted);
+    margin-left:0.35rem;
+  }
+  @keyframes pulse-ring{
+    0%{ transform:scale(0.6); opacity:0.8; }
+    100%{ transform:scale(2); opacity:0; }
+  }
+
+  /* ---------- Product grid ---------- */
+  .edit-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));
+    gap:1.6rem;
+  }
+  .product-card{ }
+  .product-art{
+    position:relative;
+    aspect-ratio:4/5;
+    border-radius:4px;
+    overflow:hidden;
+    border:1px solid var(--color-border);
+    display:flex; align-items:center; justify-content:center;
+    background:
+      radial-gradient(circle at 30% 20%, rgba(198,161,91,0.22), transparent 55%),
+      linear-gradient(155deg, var(--color-surface-raised), var(--color-bg) 70%);
+  }
+  .product-art span{
+    font-family:var(--font-display);
+    font-size:5.5rem;
+    color:rgba(198,161,91,0.16);
+    font-weight:400;
+  }
+  .product-art svg{
+    position:absolute; top:1rem; right:1rem;
+    width:20px; height:20px; color:var(--color-gold);
+    opacity:0.8;
+  }
+  .product-card:hover .product-art{ border-color:var(--color-border-strong); }
+  .product-info{ display:flex; align-items:baseline; justify-content:space-between; margin-top:1.1rem; }
+  .product-info h3{ font-family:var(--font-display); font-size:1.1rem; font-weight:500; }
+  .product-cat{ font-size:0.8rem; color:var(--color-muted); margin-top:0.25rem; }
+  .product-price{ font-family:var(--font-accent); color:var(--color-gold-bright); font-size:0.95rem; }
+
+  /* ---------- Membership CTA ---------- */
+  .access{
+    border:1px solid var(--color-border-strong);
+    border-radius:6px;
+    padding:clamp(2.2rem, 4vw, 4rem);
+    display:grid;
+    grid-template-columns:1.1fr 1fr;
+    gap:2.5rem;
+    align-items:center;
+    background:linear-gradient(160deg, var(--color-surface-raised), var(--color-bg));
+  }
+  .access h2{
+    font-family:var(--font-display);
+    font-weight:400;
+    font-size:clamp(1.8rem, 1.4rem + 1.6vw, 2.6rem);
+    line-height:1.15;
+  }
+  .access p{ color:var(--color-muted); margin-top:0.9rem; line-height:1.65; }
+  .access-form{ width:100%; }
+  .access-label{
+    display:block;
+    font-family:var(--font-accent);
+    text-transform:uppercase;
+    letter-spacing:0.1em;
+    font-size:0.75rem;
+    color:var(--color-muted);
+    margin-bottom:0.6rem;
+  }
+  .access-row{ display:flex; gap:0.7rem; flex-wrap:wrap; }
+  .access-input{
+    flex:1 1 200px;
+    min-height:44px;
+    background:var(--color-bg);
+    border:1px solid var(--color-border-strong);
+    color:var(--color-cream);
+    padding:0.8rem 1rem;
+    border-radius:2px;
+    font-family:var(--font-body);
+    font-size:0.95rem;
+  }
+  .access-input::placeholder{ color:var(--color-muted); }
+  .access-helper{ margin-top:0.9rem; font-size:0.82rem; color:var(--color-muted); }
+  .access-helper--success{ color:var(--color-gold-bright); }
+
+  /* ---------- Footer ---------- */
+  footer{ border-top:1px solid var(--color-border); padding-block:3.5rem 2.5rem; margin-top:2rem; }
+  .footer-top{ display:flex; justify-content:space-between; gap:3rem; flex-wrap:wrap; }
+  .footer-brand .nav-mark{ display:block; margin-bottom:0.6rem; }
+  .footer-brand p{ color:var(--color-muted); font-size:0.9rem; max-width:260px; }
+  .footer-cols{ display:flex; gap:3.5rem; flex-wrap:wrap; }
+  .footer-col h3{
+    font-family:var(--font-accent);
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    font-size:0.75rem;
+    color:var(--color-muted);
+    margin-bottom:1rem;
+  }
+  .footer-col ul li{ margin-bottom:0.7rem; }
+  .footer-col a{ font-size:0.9rem; color:var(--color-cream); }
+  .footer-col a:hover{ color:var(--color-gold-bright); }
+  .footer-bottom{
+    margin-top:3rem; padding-top:1.6rem;
+    border-top:1px solid var(--color-border);
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:1rem;
+    font-size:0.8rem; color:var(--color-muted);
+  }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width:860px){
+    .nav-links{ display:none; }
+    .nav-actions .btn-sm{ display:none; }
+    .nav-toggle{ display:inline-flex; }
+    .trust-grid{ grid-template-columns:repeat(2,1fr); }
+    .access{ grid-template-columns:1fr; }
+  }
+  @media (max-width:560px){
+    .trust-grid{ grid-template-columns:1fr; }
+    .hero-ctas .btn{ width:100%; }
+  }
+
+  /* ---------- Reduced motion ---------- */
+  @media (prefers-reduced-motion:reduce){
+    html{ scroll-behavior:auto; }
+    *,*::before,*::after{
+      animation-duration:0.01ms !important;
+      animation-iteration-count:1 !important;
+      transition-duration:0.01ms !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<a href="#main" class="skip-link">Skip to content</a>
+
+<header class="nav" id="site-nav" data-open="false">
+  <div class="container nav-inner">
+    <a href="#top" class="nav-mark">BEBEN</a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="#pulse">Pulse</a>
+      <a href="#edit">Collection</a>
+      <a href="#access">Access</a>
+    </nav>
+    <div class="nav-actions">
+      <a href="#access" class="btn btn-gold btn-sm">Request Access</a>
+      <button class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="mobile-menu" aria-label="Open menu">
+        <svg class="icon-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="mobile-menu" id="mobile-menu">
+    <a href="#pulse">Pulse</a>
+    <a href="#edit">Collection</a>
+    <a href="#access">Access</a>
+  </div>
+</header>
+
+<main id="main">
+
+  <section class="hero" id="top">
+    <div class="container hero-inner">
+      <p class="eyebrow hero-eyebrow">AI-Curated · Members Only</p>
+      <h1 class="hero-title">
+        <span class="line">What's rare,</span>
+        <span class="line">before it's <em>everywhere.</em></span>
+        <span class="hero-sheen" aria-hidden="true"></span>
+      </h1>
+      <p class="hero-sub">BEBEN pairs a hand-vetted edit of fine goods with Pulse — an intelligence layer that reads real-world demand — so what you're offered is both exceptional and exactly early.</p>
+      <div class="hero-ctas">
+        <a href="#edit" class="btn btn-gold">Explore the Edit</a>
+        <a href="#pulse" class="btn btn-ghost">See What's Rising
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="trust">
+    <div class="container">
+      <div class="trust-grid reveal-group">
+        <div class="trust-item reveal-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg>
+          <p>Verified provenance on every piece</p>
+        </div>
+        <div class="trust-item reveal-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8l9-5 9 5-9 5-9-5z"/><path d="M3 8v9l9 5 9-5V8"/><path d="M12 13v9"/></svg>
+          <p>Insured, white-glove delivery</p>
+        </div>
+        <div class="trust-item reveal-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12h4l2-7 4 14 2-7h4l2 3h2"/></svg>
+          <p>New arrivals surfaced by BEBEN Pulse</p>
+        </div>
+        <div class="trust-item reveal-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3z"/></svg>
+          <p>Members-first access windows</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt" id="pulse">
+    <div class="container">
+      <div class="section-head reveal">
+        <p class="eyebrow">BEBEN Pulse</p>
+        <h2>Demand, read in real time.</h2>
+        <p>Every piece in the Edit is scored against live signals — search interest, sell-through, editorial mentions — so you see what's actually gaining ground, not just what's in stock.</p>
+      </div>
+      <div class="pulse-grid reveal-group">
+
+        <article class="pulse-card reveal-item">
+          <div class="pulse-card__top">
+            <span class="pulse-rank">01</span>
+            <span class="pulse-live"><span class="pulse-dot" aria-hidden="true"></span>Live</span>
+          </div>
+          <h3 class="pulse-card__name">The Solstice Cuff</h3>
+          <p class="pulse-card__cat">Fine Jewelry</p>
+          <div class="pulse-chart" role="img" aria-label="Demand trend rising 64 percent this week">
+            <span style="--h:25%"></span><span style="--h:35%"></span><span style="--h:30%"></span><span style="--h:50%"></span><span style="--h:65%"></span><span style="--h:100%"></span>
+          </div>
+          <p class="pulse-card__stat">+64%<span>this week</span></p>
+        </article>
+
+        <article class="pulse-card reveal-item">
+          <div class="pulse-card__top">
+            <span class="pulse-rank">02</span>
+            <span class="pulse-live"><span class="pulse-dot" aria-hidden="true"></span>Live</span>
+          </div>
+          <h3 class="pulse-card__name">Meridian Chronograph</h3>
+          <p class="pulse-card__cat">Timepieces</p>
+          <div class="pulse-chart" role="img" aria-label="Demand trend rising 41 percent this week">
+            <span style="--h:40%"></span><span style="--h:30%"></span><span style="--h:45%"></span><span style="--h:55%"></span><span style="--h:60%"></span><span style="--h:85%"></span>
+          </div>
+          <p class="pulse-card__stat">+41%<span>this week</span></p>
+        </article>
+
+        <article class="pulse-card reveal-item">
+          <div class="pulse-card__top">
+            <span class="pulse-rank">03</span>
+            <span class="pulse-live"><span class="pulse-dot" aria-hidden="true"></span>Live</span>
+          </div>
+          <h3 class="pulse-card__name">Aurum Weekend Bag</h3>
+          <p class="pulse-card__cat">Leather Goods</p>
+          <div class="pulse-chart" role="img" aria-label="Demand trend rising 37 percent this week">
+            <span style="--h:35%"></span><span style="--h:50%"></span><span style="--h:40%"></span><span style="--h:55%"></span><span style="--h:65%"></span><span style="--h:80%"></span>
+          </div>
+          <p class="pulse-card__stat">+37%<span>this week</span></p>
+        </article>
+
+        <article class="pulse-card reveal-item">
+          <div class="pulse-card__top">
+            <span class="pulse-rank">04</span>
+            <span class="pulse-live"><span class="pulse-dot" aria-hidden="true"></span>Live</span>
+          </div>
+          <h3 class="pulse-card__name">The Ines Silk Scarf</h3>
+          <p class="pulse-card__cat">Accessories</p>
+          <div class="pulse-chart" role="img" aria-label="Demand trend rising 29 percent this week">
+            <span style="--h:45%"></span><span style="--h:40%"></span><span style="--h:55%"></span><span style="--h:50%"></span><span style="--h:60%"></span><span style="--h:72%"></span>
+          </div>
+          <p class="pulse-card__stat">+29%<span>this week</span></p>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="edit">
+    <div class="container">
+      <div class="section-head reveal">
+        <p class="eyebrow">The Current Edit</p>
+        <h2>Six pieces, hand-set for this season.</h2>
+        <p>Curated by the BEBEN team, ranked by Pulse. Availability moves with demand — the Edit is refreshed weekly.</p>
+      </div>
+      <div class="edit-grid reveal-group">
+
+        <div class="product-card reveal-item">
+          <div class="product-art">
+            <span aria-hidden="true">S</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3z"/></svg>
+          </div>
+          <div class="product-info">
+            <div>
+              <h3>The Solstice Cuff</h3>
+              <p class="product-cat">Fine Jewelry</p>
+            </div>
+            <span class="product-price">$1,240</span>
+          </div>
+        </div>
+
+        <div class="product-card reveal-item">
+          <div class="product-art">
+            <span aria-hidden="true">M</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3z"/></svg>
+          </div>
+          <div class="product-info">
+            <div>
+              <h3>Meridian Chronograph</h3>
+              <p class="product-cat">Timepieces</p>
+            </div>
+            <span class="product-price">$4,850</span>
+          </div>
+        </div>
+
+        <div class="product-card reveal-item">
+          <div class="product-art">
+            <span aria-hidden="true">A</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3z"/></svg>
+          </div>
+          <div class="product-info">
+            <div>
+              <h3>Aurum Weekend Bag</h3>
+              <p class="product-cat">Leather Goods</p>
+            </div>
+            <span class="product-price">$2,180</span>
+          </div>
+        </div>
+
+        <div class="product-card reveal-item">
+          <div class="product-art">
+            <span aria-hidden="true">I</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3z"/></svg>
+          </div>
+          <div class="product-info">
+            <div>
+              <h3>The Ines Silk Scarf</h3>
+              <p class="product-cat">Accessories</p>
+            </div>
+            <span class="product-price">$390</span>
+          </div>
+        </div>
+
+        <div class="product-card reveal-item">
+          <div class="product-art">
+            <span aria-hidden="true">V</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3z"/></svg>
+          </div>
+          <div class="product-info">
+            <div>
+              <h3>Vesper Signet Ring</h3>
+              <p class="product-cat">Fine Jewelry</p>
+            </div>
+            <span class="product-price">$780</span>
+          </div>
+        </div>
+
+        <div class="product-card reveal-item">
+          <div class="product-art">
+            <span aria-hidden="true">C</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3z"/></svg>
+          </div>
+          <div class="product-info">
+            <div>
+              <h3>The Callo Loafers</h3>
+              <p class="product-cat">Footwear</p>
+            </div>
+            <span class="product-price">$960</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="access">
+    <div class="container">
+      <div class="access reveal">
+        <div>
+          <p class="eyebrow">Membership</p>
+          <h2>Early access is the point.</h2>
+          <p>Request an invitation to shop the Edit before it's public — and let Pulse tell you what's worth moving on.</p>
+        </div>
+        <form class="access-form" id="access-form" novalidate>
+          <label class="access-label" for="access-email">Email</label>
+          <div class="access-row">
+            <input class="access-input" type="email" id="access-email" name="email" placeholder="you@example.com" autocomplete="email" required>
+            <button class="btn btn-gold" type="submit">Request Access</button>
+          </div>
+          <p class="access-helper" id="access-helper">We review requests within 48 hours — no spam, ever.</p>
+        </form>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="container">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <span class="nav-mark">BEBEN</span>
+        <p>Luxury, intelligently curated.</p>
+      </div>
+      <div class="footer-cols">
+        <div class="footer-col">
+          <h3>Shop</h3>
+          <ul>
+            <li><a href="#edit">The Edit</a></li>
+            <li><a href="#pulse">Pulse</a></li>
+            <li><a href="#access">Access</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h3>Company</h3>
+          <ul>
+            <li><a href="#top">About</a></li>
+            <li><a href="#top">Journal</a></li>
+            <li><a href="#top">Careers</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h3>Support</h3>
+          <ul>
+            <li><a href="#top">Contact</a></li>
+            <li><a href="#top">Shipping</a></li>
+            <li><a href="#top">Returns</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 BEBEN. All rights reserved.</span>
+      <span>Designed with BEBEN Pulse intelligence.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.15.0/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.15.0/ScrollTrigger.min.js"></script>
+<script>
+  // Mobile menu toggle
+  (function(){
+    var nav = document.getElementById('site-nav');
+    var toggle = document.getElementById('nav-toggle');
+    var menu = document.getElementById('mobile-menu');
+    if(!nav || !toggle || !menu) return;
+    toggle.addEventListener('click', function(){
+      var open = nav.getAttribute('data-open') === 'true';
+      nav.setAttribute('data-open', open ? 'false' : 'true');
+      toggle.setAttribute('aria-expanded', open ? 'false' : 'true');
+      toggle.setAttribute('aria-label', open ? 'Open menu' : 'Close menu');
+    });
+    menu.querySelectorAll('a').forEach(function(link){
+      link.addEventListener('click', function(){
+        nav.setAttribute('data-open', 'false');
+        toggle.setAttribute('aria-expanded', 'false');
+        toggle.setAttribute('aria-label', 'Open menu');
+      });
+    });
+  })();
+
+  // Request access form (demo-only, no backend)
+  (function(){
+    var form = document.getElementById('access-form');
+    var helper = document.getElementById('access-helper');
+    if(!form || !helper) return;
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      var input = document.getElementById('access-email');
+      var email = input.value.trim();
+      if(!email) return;
+      helper.textContent = "You're on the list — check " + email + " soon.";
+      helper.classList.add('access-helper--success');
+      input.value = '';
+      input.disabled = true;
+      form.querySelector('button[type="submit"]').disabled = true;
+    });
+  })();
+
+  // Motion — skipped entirely if the visitor prefers reduced motion,
+  // in which case content is already visible via default (non-hidden) CSS.
+  (function(){
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(reduceMotion || typeof gsap === 'undefined') return;
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    var heroTl = gsap.timeline({ defaults:{ ease:'power2.out', duration:0.8 } });
+    heroTl
+      .from('.hero-eyebrow', { y:16, opacity:0 })
+      .from('.hero-title .line', { y:28, opacity:0, stagger:0.09 }, '-=0.5')
+      .from('.hero-sub', { y:16, opacity:0 }, '-=0.45')
+      .from('.hero-ctas', { y:16, opacity:0 }, '-=0.5')
+      .fromTo('.hero-sheen', { xPercent:-130 }, { xPercent:300, duration:1.3, ease:'power2.inOut' }, '-=0.5');
+
+    gsap.utils.toArray('.reveal').forEach(function(el){
+      gsap.from(el, {
+        y:26, opacity:0, duration:0.7, ease:'power2.out',
+        scrollTrigger:{ trigger:el, start:'top 85%', once:true }
+      });
+    });
+
+    gsap.utils.toArray('.reveal-group').forEach(function(group){
+      var items = group.querySelectorAll('.reveal-item');
+      gsap.from(items, {
+        y:22, opacity:0, duration:0.6, stagger:0.09, ease:'power2.out',
+        scrollTrigger:{ trigger:group, start:'top 85%', once:true }
+      });
+    });
+  })();
+</script>
+
+</body>
+</html>
